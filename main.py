@@ -6,19 +6,18 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
-import brain
 
-""" Initialization of everything """
-
+"""Initialization of everything"""
+import functions as f
 # brick
-ev3 = EV3Brick()
+EV3 = EV3Brick()
 
 # timer
 t = StopWatch()
 
 # marche motors
-RM = Motor(Port.D)
-LM = Motor(Port.A)
+RM = Motor(Port.C)
+LM = Motor(Port.B)
 
 
 # initialize sensor
@@ -29,54 +28,39 @@ G = GyroSensor(Port.S3)
 
 """ START """ 
 #ev3.speaker.beep()
-brain.startup_sound(ev3)
 
 
 
 """ MAIN SEQUENCE """
 start=t.time()
 
-"""
-while(True):
-    #brain.print_all_sensors(ev3,CL,CR,G)
-    brain.print_rel(ev3,CL,CR)
-    wait(2000)
-    ev3.screen.clear()
-"""
-#1. front straight piece before the ship
 
 
 # jump over the front line
+"""
 start_angle=G.angle()
 RM.run(-500)
 LM.run(-500)
 wait(1000)
+"""
 
-# stop at the next threshold
-while (True):
-    if brain.follow_line(ev3,CL,CR)=="move on":
-        ev3.screen.print("-==-")
-        RM.run(-500)
-        LM.run(-500)
-    if brain.follow_line(ev3,CL,CR)=="turn left":
-        ev3.screen.print("<-")
-        RM.run(-500)
-        LM.run(-400)
-    if brain.follow_line(ev3,CL,CR)=="turn right":
-        ev3.screen.print("->")
-        RM.run(-400)
-        LM.run(-500)
-    if brain.follow_line(ev3,CL,CR)=="stop":
-        ev3.screen.print("theshold")
-        break
-    if brain.follow_line(ev3,CL,CR)=="undefined":
-        ev3.screen.print("undefined")
-        break
+#1 jump 10 centimeters straight-out without caring of crossing line ++
+#2 line-follow to the Г-shaped crossing  ++
+# f.lineFollowToGamma(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R) 
+#3 turn 90 degrees right
+f.turn180(EV3,LM,RM,G)
+#4 * confirm it stays at line and reallign if needed
+#5 line follows to + crossing 
+#6 line follows to next + crossing 
+#7 turn 90 degrees left
+#8 reallign with + by going 720 degrees back and then forward until + in sight
+#9 from this place keep gyro following N centimeters straight
+#10 45degree to the left
+#11 grab left brick
 
-#follow_line_until_crossing(ev3,CL,CR,G,LM,RM)
-#follow_line_until_crossing(ev3,CL,CR,G,LM,RM)
 
-# rotate 90 right
+
+"""
 start_angle=G.angle()
 RM.run(500)
 LM.run(-500)
@@ -86,12 +70,12 @@ while(True):
         break
 RM.stop()
 LM.stop()
-
+"""
 
 
 
 """ END OF WORK """
 
 
-ev3.speaker.play_notes(["G4/8","E4/8","C4/8"], tempo=120)
+EV3.speaker.play_notes(["G4/8","E4/8","C4/8"], tempo=120)
 wait(5000)
