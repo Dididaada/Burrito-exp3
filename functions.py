@@ -1,3 +1,16 @@
+#constants
+
+def _ContrSpeed():
+    return 800
+
+def _Black():
+    return 15
+
+def _White():
+    return 35
+
+
+
 def beep(EV3):
     """
     Little beep  - a procedure
@@ -48,18 +61,16 @@ def turn90(EV3, LM, RM, G):
 
 def pickAndLiftOp(EV3,CLAW,LIFT):
     targetAngle = 1700
-    targetSpeed = 800
-    CLAW.run_target(targetSpeed,-targetAngle,wait=True) #closing
+    CLAW.run_target(_ContrSpeed(),-targetAngle,wait=True) #closing
     #CLAW.run_target(targetSpeed,targetAngle,wait=True) #opening
 
-    LIFT.run_target(targetSpeed,targetAngle,wait=True) #lifting
-    
+    LIFT.run_target(_ContrSpeed(),targetAngle,wait=True) #lifting
+
 def pickAndLiftCl(EV3, CLAW, LIFT):
     targetAngle = 1700
-    targetSpeed = 800
-    CLAW.run_target(targetSpeed,targetAngle,wait=True) #opening
-    CLAW.run_target(targetSpeed,-targetAngle,wait=True) #closing
-    LIFT.run_target(targetSpeed,targetAngle,wait=True) #lifting
+    CLAW.run_target(_ContrSpeed(),targetAngle,wait=True) #opening
+    CLAW.run_target(_ContrSpeed(),-targetAngle,wait=True) #closing
+    LIFT.run_target(_ContrSpeed(),targetAngle,wait=True) #lifting
 
 
 """ MOTION PROCEDURES"""
