@@ -46,8 +46,20 @@ def turn90(EV3, LM, RM, G):
         LM.run_time(400, 100, wait=False)
         RM.run_time(-400, 100, wait=False)
 
-def pickAndLift(EV3,CLAW,LIFT):
-    pass
+def pickAndLiftOp(EV3,CLAW,LIFT):
+    targetAngle = 1700
+    targetSpeed = 800
+    CLAW.run_target(targetSpeed,-targetAngle,wait=True) #closing
+    #CLAW.run_target(targetSpeed,targetAngle,wait=True) #opening
+
+    LIFT.run_target(targetSpeed,targetAngle,wait=True) #lifting
+    
+def pickAndLiftCl(EV3, CLAW, LIFT):
+    targetAngle = 1700
+    targetSpeed = 800
+    CLAW.run_target(targetSpeed,targetAngle,wait=True) #opening
+    CLAW.run_target(targetSpeed,-targetAngle,wait=True) #closing
+    LIFT.run_target(targetSpeed,targetAngle,wait=True) #lifting
 
 
 """ MOTION PROCEDURES"""
