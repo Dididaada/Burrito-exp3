@@ -123,7 +123,7 @@ def line_following_pid(ev3, left_motor, right_motor, left_color_sensor, right_co
         prev_error = error
 
         # Add a delay to control the update rate of the PID controller.
-        wait(10)
+        wait(10) 
 
 
 """ MOTION PROCEDURES"""
