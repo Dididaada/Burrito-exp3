@@ -1,3 +1,8 @@
+#imports
+from pybricks.ev3devices import Motor, ColorSensor
+from pybricks.tools import wait
+from pybricks.parameters import Stop
+
 #constants
 
 def _ContrSpeed():
@@ -71,6 +76,54 @@ def pickAndLiftCl(EV3, CLAW, LIFT):
     CLAW.run_target(_ContrSpeed(),targetAngle,wait=True) #opening
     CLAW.run_target(_ContrSpeed(),-targetAngle,wait=True) #closing
     LIFT.run_target(_ContrSpeed(),targetAngle,wait=True) #lifting
+
+#PID version of line follower, works but its kinda slow
+def line_following_pid(ev3, left_motor, right_motor, left_color_sensor, right_color_sensor,
+                       BLACK_THRESHOLD_L, BLACK_THRESHOLD_R, WHITE_THRESHOLD_L, WHITE_THRESHOLD_R,
+                       BLUE_THRESHOLD, KP, KI, KD, MAX_INTEGRAL, MIN_INTEGRAL, SLOW_SPEED, SPEED_INCREMENT):
+    # Initialize PID variables.
+    prev_error = 0
+    integral = 0
+
+    while True:
+        # Read color sensor values.
+        left_color = sum(left_color_sensor.rgb())
+        right_color = sum(right_color_sensor.rgb())
+
+        # Calculate the error based on the position relative to the desired white line.
+        error = (right_color - left_color) - (WHITE_THRESHOLD_R - WHITE_THRESHOLD_L)
+
+        # Calculate the PID terms.
+        proportional = KP * error
+        integral += KI * error
+        derivative = KD * (error - prev_error)
+
+        # Anti-windup: Limit the integral term.
+        if integral > MAX_INTEGRAL:
+            integral = MAX_INTEGRAL
+        elif integral < MIN_INTEGRAL:
+            integral = MIN_INTEGRAL
+
+        # Calculate the motor speeds based on the PID control with smaller increments.
+        left_speed = SLOW_SPEED + proportional + integral + derivative
+        right_speed = SLOW_SPEED - proportional - integral - derivative
+
+        # Ensure both motors are running with smaller increments.
+        left_motor.dc(left_motor.speed() + (left_speed - left_motor.speed()) * SPEED_INCREMENT)
+        right_motor.dc(right_motor.speed() + (right_speed - right_motor.speed()) * SPEED_INCREMENT)
+
+        # Check if either sensor detects blue (off-course).
+        if left_color <= BLUE_THRESHOLD or right_color <= BLUE_THRESHOLD:
+            # Robot is off-course, stop both motors.
+            left_motor.stop(Stop.BRAKE)
+            right_motor.stop(Stop.BRAKE)
+            integral = 0  # Reset the integral term when off-course.
+
+        # Update previous error for the next iteration.
+        prev_error = error
+
+        # Add a delay to control the update rate of the PID controller.
+        wait(10)
 
 
 """ MOTION PROCEDURES"""
