@@ -1,49 +1,168 @@
-# Alex version of main.py (works)
 #!/usr/bin/env pybricks-micropython
-
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor, ColorSensor
-from pybricks.parameters import Port, Stop
-from pybricks.tools import wait
+from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
+                                 InfraredSensor, UltrasonicSensor, GyroSensor)
+from pybricks.parameters import Port, Stop, Direction, Button, Color
+from pybricks.tools import wait, StopWatch, DataLog
+from pybricks.robotics import DriveBase
+from pybricks.media.ev3dev import SoundFile, ImageFile, Font
+
+# importing user units
 import functions as f
 
-# Initialize the EV3 brick.
-ev3 = EV3Brick()
-ev3.screen.print("STARTED")
-wait(3000)
-ev3.screen.clear()
+# Create your objects here.
+EV3 = EV3Brick()  
 
-# Define and initialize the motors and color sensors.
-left_motor = Motor(Port.B)
-right_motor = Motor(Port.C)
-left_color_sensor = ColorSensor(Port.S4)
-right_color_sensor = ColorSensor(Port.S1)
+# timer
+T = StopWatch()  
 
-# Define color thresholds for black+6, white, and blue lines.
-BLACK_THRESHOLD_L = 30
-BLACK_THRESHOLD_R = 30
-WHITE_THRESHOLD_L = 300
-WHITE_THRESHOLD_R = 300
-BLUE_THRESHOLD = 150  # Adjust this threshold based on sensor readings.
+# screen font
+small_font = Font(size=12)
+   
+# marche motors
+R = Motor(Port.C)  #right wheel
+L = Motor(Port.B)  #left wheel
+ 
+# grabbing motors
+CLAW = Motor(Port.A) #Motor(Port.A)
+LIFT = Motor(Port.D) #Motor(Port.D)
 
-# PID constants (adjust as needed).
-KP = 1.0  # Proportional gain
-KI = 0.05  # Integral gain
-KD = 0.0  # Derivative gain
+# initialize sensor
+RCOLOR = ColorSensor(Port.S1) 
+LCOLOR = ColorSensor(Port.S4)
+G = GyroSensor(Port.S3)
+FCOLOR = ColorSensor(Port.S2)
+BCOLOR = ""
+# Store the initial angle before the 15-degree turn
+initial_angle = G.angle()
 
-# Anti-windup parameters.
-MAX_INTEGRAL = 1000  # Maximum allowable integral term value.
-MIN_INTEGRAL = -1000  # Minimum allowable integral term value.
+f.beep(EV3)
 
-# Speed for slow movement and speed increment.
-SLOW_SPEED = 50  # Adjust this value for your robot.
-SPEED_INCREMENT = 5  # Adjust this value for smaller steps.
+f.startupSound(EV3)
 
-# Call the function to start line following with PID control.
-f.line_following_pid(ev3, left_motor, right_motor, left_color_sensor, right_color_sensor,
-                     BLACK_THRESHOLD_L, BLACK_THRESHOLD_R, WHITE_THRESHOLD_L, WHITE_THRESHOLD_R,
-                     BLUE_THRESHOLD, KP, KI, KD, MAX_INTEGRAL, MIN_INTEGRAL, SLOW_SPEED, SPEED_INCREMENT)
-                     
+
+#1 display data
+f.print_all_sensors(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+wait(1000)
+
+#2 jump forward 2000ms
+f.forward(EV3,L,R,T,2000)
+
+#3 proceed to the next threshold
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
+#3.* lil back
+f.backward(EV3,L,R,T,1600)
+
+f.beep_if_gyro_not_zero(EV3, G)
+
+#4 turn right to 45 degrees
+f.turnTo45(EV3,G,L,R)
+wait(1000)
+
+#3.* lil forward
+f.forward(EV3,L,R,T,1000)
+
+#4 turn right 90 degrees which means that it get back on the line and continues to follow the line
+f.turnTo90(EV3,G,L,R)
+wait(1000)
+
+#5 proceed to the next threshold
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
+#6 proceed to the next threshold
+f.forward(EV3,L,R,T,2000)
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
+#7 turning north
+f.turnTo0(EV3,G,L,R)
+wait(1000)
+
+#8 Stop if the front sensor detects anything more than 0 in RGB and rotate towards the block 
+f.forward(EV3,L,R,T, 2900) 
+if f.deetectFront(EV3, FCOLOR) == "some col other than black":
+    L.stop() 
+    R.stop()
+    EV3.screen.print("Front sensor detected something!")
+
+
+
+# Perform the 15-degree turn
+f.turnTo15(EV3, G, L, R)
+wait(1000) 
+
+# Rotate back to the initial angle
+f.rotateToInitialAngle(EV3, G, L, R, initial_angle)
+
+
+#9 Grabbing mechanism  
+
+
+#10 rotating by 180 degrees and going back 
+f.turn180(EV3, L, R, G)
+wait(1000)
+
+#11 going to the cross section 
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
+#12 Turn 90 
+f.turnTo45(EV3,G,L,R)
+wait(1000)
+
+#13 go to the next threshold 
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"") 
+
+#14 turn to the ship dropping line
+f.turnTo45(EV3,G,L,R)
+wait(1000)
+
+#15 going in the front and stopping at some point parallel to the ship 
+f.forward(EV3,L,R,T,1000)
+
+#16 turning on the left 
+f.turnTo90left(EV3,G,L,R)
+wait(1000)
+   
+#17 going to the ships to put down the first block
+f.forward(EV3,L,R,T)
+if f.deetectFront(EV3, FCOLOR) == "some col other than black":
+    L.stop() 
+    R.stop()
+    EV3.screen.print("Front sensor detected something!") # this code stays here until it's tested
+
+#18 putting down mechanism 
+
+#19 Coming back to 3 blocks and pick one 
+#19/1 turning back 
+f.turn180(EV3, L, R, G)
+wait(1000)
+#19/2 going back to the threshold
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+#19/3 driving to the right to the threshold 
+f.turnTo45(EV3,G,L,R)
+wait(1000)
+#go to the cross section 
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+#19/4 turning on the left and planning on picking up second block
+f.turnTo90left(EV3,G,L,R)
+wait(1000)
+#19/5 getting to another threshold 
+f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+#19/6 turn to the left 
+f.turnTo90left(EV3,G,L,R)
+wait(1000)
+#19/7 go in the front until robot arrives at the three blocks 
+f.forward(EV3,L,R,T)
+if f.deetectFront(EV3, FCOLOR) == "some col other than black":
+    L.stop() 
+    R.stop()
+    EV3.screen.print("Front sensor detected something!")
+
+
+#f.print_all_sensors(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+wait(5000)
+
+
 
 """
 #!/usr/bin/env pybricks-micropython
