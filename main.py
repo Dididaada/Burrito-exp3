@@ -44,35 +44,44 @@ f.startupSound(EV3)
 # 0 display data
 f.print_all_sensors(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
 wait(1000)
+
 # 1 go forward and proceed to the next threshold
 f.forward(EV3,L,R,T,2000)
 f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
 # 2 go back
 f.backward(EV3,L,R,T,1600)
 f.beep_if_gyro_not_zero(EV3, G)
+
 # 3 turn right 45 degrees 
 f.turnTo45(EV3,G,L,R)
 wait(1000)
+
 # 4 go forward 
 f.forward(EV3,L,R,T,1000)
+
 # 5 turn 90, it gets back on the line and continues to follow the line
 f.turnTo90(EV3,G,L,R)
 wait(1000)
+
 # 6 reach the 2d cross 
     # proceed to the next threshold
 f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
     # proceed to the next threshold
 f.forward(EV3,L,R,T,2000)
 f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
+
 # 7 turn north
 f.turnTo0(EV3,G,L,R)
 wait(1000)
+
 # 8 stop if the front sensor detects anything more than 0 in RGB and rotate towards the block
 f.forward(EV3,L,R,T, 2900) 
 if f.deetectFront(EV3, FCOLOR) == "some col other than black":
     L.stop() 
     R.stop()
     EV3.screen.print("Front sensor detected something!")
+  
 # 9 reach the block looking to the north (fix the angle)
 f.turnTo15(EV3, G, L, R)
 wait(1000) 
@@ -80,6 +89,7 @@ wait(1000)
 f.rotateToInitialAngle(EV3, G, L, R, initial_angle)
 
 # 10 grab it and lift it 
+
 # 11 turn south (180) and find the line 
 f.turn180(EV3, L, R, G)
 wait(1000)
@@ -88,16 +98,17 @@ wait(1000)
 # 12 turn right and use follow the line 
 f.turnTo45(EV3,G,L,R)
 wait(1000)
+
 # 13 next cross 
 f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"") 
-# Perform the 15-degree turn
 
 
-#9 Grabbing mechanism  
-#11 going to the cross section 
-f.driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,"")
 
-#13 go to the next threshold 
+
+
+
+
+# not confirmed
 
 
 #14 turn to the ship dropping line
