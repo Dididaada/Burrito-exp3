@@ -10,13 +10,13 @@ def detectColor(C):
     return "blue"
 
 def _slow():
-    return -80
+    return -80 #-80
 
 def _slowBack():
     return 100
 
 def _fast():
-    return -250
+    return -250 #-250
 
 def _ContrSpeed():
     return -800
@@ -77,7 +77,6 @@ def followLine(EV3,LCOLOR,RCOLOR):
     #EV3.screen.print(l+str(LCOLOR.rgb())+"==="+r+str(RCOLOR.rgb()))
     LEFT = detectColor(LCOLOR)
     RIGHT = detectColor(RCOLOR)
-  
 
 
     ####
@@ -145,12 +144,13 @@ def backward(EV3,L,R,T,ms):
             break
 
 def turnTodegree(EV3,G,L,R, degrees): 
-    L.run(_fast())
-    R.stop()
+    L.run(_slowBack())
+    R.run(_fast())
+    
     #angle=G.angle()
 
-    while G.angle() not in range(degrees-2,degrees+2):
-        EV3.screen.print(G.angle())
+    while G.angle() not in range(degrees-3,degrees+2):
+        #EV3.screen.print(G.angle())
         pass
     L.stop()
     R.stop()
@@ -203,6 +203,8 @@ def driveToNextThr(EV3,LCOLOR,BCOLOR,RCOLOR,G,L,R,T,small_font,message):
             beep(EV3)
             L.stop()
             R.stop()
+            L.stop()
+            R.stop()
             wait(1000)
             break
             
@@ -250,7 +252,7 @@ def turnTo90left(EV3,G,L,R):
     L.run(_fastBack())
     R.run(_fast())
     #angle=G.angle()
-    while G.angle() not in range(87,93):
+    while G.angle() not in range(-3,3):
         EV3.screen.print(G.angle())
         pass
     L.stop()
@@ -276,6 +278,7 @@ def pickupFromSense(EV3, G, L, R, CLAW, LIFT,T):
     wait(500)
     LIFT.stop()
     pickAndLift(EV3,CLAW,LIFT)
+
 def turnTo15left(EV3,G,L,R):
     L.run(_fastBack())
     R.run(_fast())
@@ -352,12 +355,15 @@ def liftForkUp(EV3, LIFT):
     LIFT.run_target(200, 160, then=Stop.HOLD, wait=True) # Move the fork up to 160 degrees and hold
 
 def prepareToTakeObject(EV3, LIFT):
-    LIFT.run_target(200, 57, wait=True) # Put the LIFT to 53 degrees
+    LIFT.run_target(200, 60, wait=True) # Put the LIFT to 53 degrees
 
 def openAndCloseFork(EV3, CLAW):
     CLAW.run_target(200, 1000, wait=True) # Open the claw
     CLAW.run_target(200, 0, wait=True)    # Close the claw
-
+def turnRedOnback(EV3, LIFT): 
+    LIFT.run_target(200, 200, wait=True) # Put the LIFT to 200 degrees
+def putRedOnback(EV3, CLAW):
+    CLAW.run_target(200, 1000, wait=True)
 def open(EV3, CLAW): 
     CLAW.run_target(400, 1000, wait=True)
     
